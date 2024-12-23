@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DataLoadingManager {
     // Thread-safe hash map to store words and embeddings
     ConcurrentHashMap<String, double[]> wordEmbeddings = new ConcurrentHashMap<>();
+    ConcurrentHashMap<String, double[]> googleWords = new ConcurrentHashMap<>();
 
     /**
      * This method reads in the words and the embeddings from the .txt file
@@ -38,6 +39,25 @@ public class DataLoadingManager {
 
             // Confirmation
             System.out.println("Total words loaded: " + wordEmbeddings.size());
+        } catch (IOException e) {
+            System.out.println("Error reading file: " + e.getMessage());
+        }
+    }
+
+    /**
+     * This method reads in the Google-1000 words
+     */
+    public void loadGoogle1000Words(String fileName) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                // We only want the words that have embeddings
+                if (wordEmbeddings.containsKey(line)) {
+                    googleWords.put(line, wordEmbeddings.get(line));
+                }
+            }
+            System.out.println("Google-1000 words loaded: " + googleWords.size());
         } catch (IOException e) {
             System.out.println("Error reading file: " + e.getMessage());
         }
