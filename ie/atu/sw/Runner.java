@@ -1,36 +1,122 @@
 package ie.atu.sw;
 
+import java.io.IOException;
+import java.util.Scanner;
+
 public class Runner {
 
     public static void main(String[] args) throws Exception {
-        //You should put the following code into a menu or Menu class
-        System.out.println(ConsoleColour.WHITE);
-        System.out.println("************************************************************");
-        System.out.println("*     ATU - Dept. of Computer Science & Applied Physics    *");
-        System.out.println("*                                                          *");
-        System.out.println("*             Virtual Threaded Text Simplifier             *");
-        System.out.println("*                                                          *");
-        System.out.println("************************************************************");
-        System.out.println("(1) Specify Embeddings File");
-        System.out.println("(2) Specify Google 1000 File");
-        System.out.println("(3) Specify an Output File (default: ./out.txt)");
-        System.out.println("(4) Execute, Analyse and Report");
-        System.out.println("(5) Optional Extras...");
-        System.out.println("(?) Quit");
+        Runner runner = new Runner();
+        runner.menu();
+    }
 
-        //Output a menu of options and solicit text from the user
-        System.out.print(ConsoleColour.BLACK_BOLD_BRIGHT);
-        System.out.print("Select Option [1-4]>");
-        System.out.println();
+    /**
+     * Displays the main menu and processes user input.
+     * Allows the user to specify file paths and execute text simplification.
+     *
+     * @throws Exception If an error occurs during processing.
+     */
+    public void menu() throws Exception {
+        Scanner scanner = new Scanner(System.in);
 
+        // Variables for file paths
+        String embeddingsFile = null;
+        String google1000File = null;
+        String inputFile = null;
+        String outputFile = "out.txt";
 
-        //You may want to include a progress meter in you assignment!
-        System.out.print(ConsoleColour.YELLOW);    //Change the colour of the console text
-        int size = 100;                            //The size of the meter. 100 equates to 100%
-        for (int i = 0; i < size; i++) {        //The loop equates to a sequence of processing steps
-            printProgress(i + 1, size);        //After each (some) steps, update the progress meter
-            Thread.sleep(10);                    //Slows things down so the animation is visible
+        // Menu
+        boolean exit = false;
+        while (!exit) {
+            System.out.println(ConsoleColour.BLUE);
+            System.out.println("************************************************************");
+            System.out.println("*     ATU - Dept. of Computer Science & Applied Physics    *");
+            System.out.println("*                                                          *");
+            System.out.println("*             Virtual Threaded Text Simplifier             *");
+            System.out.println("************************************************************");
+            System.out.println("(1) Specify Embeddings File");
+            System.out.println("(2) Specify Google 1000 File");
+            System.out.println("(3) Specify Input File");
+            System.out.println("(4) Specify an Output File (default: ./out.txt)");
+            System.out.println("(5) Execute, Analyse and Report");
+            System.out.println("(-1) Quit");
+
+            // Output a menu of options and solicit text from the user
+            System.out.print(ConsoleColour.BLACK_BOLD_BRIGHT);
+            System.out.print("Select Option [1-5]> ");
+            int choice = scanner.nextInt();
+
+            // Get rid of leftover line
+            scanner.nextLine();
+
+            switch (choice) {
+                case 1:
+                    System.out.println("Enter Path For Embeddings File: ");
+                    embeddingsFile = scanner.nextLine();
+                    break;
+                case 2:
+                    System.out.println("Enter Path For Google 1000 File: ");
+                    google1000File = scanner.nextLine();
+                    break;
+                case 3:
+                    System.out.print("Enter Path For Input File: ");
+                    inputFile = scanner.nextLine();
+                    break;
+                case 4:
+                    System.out.print("Enter Path For Output File: ");
+                    outputFile = scanner.nextLine();
+                    break;
+                case 5:
+                    if (embeddingsFile == null || google1000File == null || inputFile == null) {
+                        System.out.println(ConsoleColour.RED + "Please specify all required file paths first.");
+                        continue;
+                    }
+
+                    try {
+                        // Load data and process input
+                        simplifyWords(embeddingsFile, google1000File, inputFile, outputFile);
+                        System.out.println(ConsoleColour.GREEN + "Text simplification complete!");
+                        System.out.println(ConsoleColour.CYAN + "Output saved to: " + outputFile);
+                    } catch (Exception e) {
+                        System.out.println(ConsoleColour.RED + "Error: " + e.getMessage());
+                    }
+                    break;
+                case -1:
+                    System.out.println(ConsoleColour.RED + "Exiting...");
+                    exit = true;
+                    return;
+                default:
+                    System.out.println(ConsoleColour.RED + "Invalid option!");
+            }
         }
+
+        // You may want to include a progress meter in you assignment!
+        System.out.print(ConsoleColour.YELLOW);    // Change the colour of the console text
+        int size = 100;                            // The size of the meter. 100 equates to 100%
+        for (int i = 0; i < size; i++) {        // The loop equates to a sequence of processing steps
+            printProgress(i + 1, size);        // After each (some) steps, update the progress meter
+            Thread.sleep(10);                    // Slows things down so the animation is visible
+        }
+    }
+
+    /**
+     * Simplifies the text using specified file paths.
+     *
+     * @param embeddingsFile Path to embeddings file.
+     * @param google1000File Path to Google-1000 file.
+     * @param inputFile      Path to input file.
+     * @param outputFile     Path for the output file.
+     * @throws Exception If an error occurs during processing.
+     */
+    private void simplifyWords(String embeddingsFile, String google1000File, String inputFile, String outputFile) throws IOException {
+        // Load embeddings and google-1000 words (using data loading manager class)
+        DataLoadingManager dataManager = new DataLoadingManager();
+        dataManager.loadWordEmbeddings(embeddingsFile);
+        dataManager.loadGoogle1000Words(google1000File);
+
+        // Process comparison and save output
+        TextProcessor processor = new TextProcessor(dataManager.wordEmbeddings, dataManager.googleWords);
+        processor.simplifyText(inputFile, outputFile);
     }
 
 
