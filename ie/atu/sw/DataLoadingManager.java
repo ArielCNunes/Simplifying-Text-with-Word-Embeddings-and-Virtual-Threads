@@ -10,8 +10,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DataLoadingManager {
     // Thread-safe hash map to store words and embeddings
-    ConcurrentHashMap<String, double[]> wordEmbeddings = new ConcurrentHashMap<>();
-    ConcurrentHashMap<String, double[]> googleWords = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, double[]> wordEmbeddings = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, double[]> googleWords = new ConcurrentHashMap<>();
 
     /**
      * This method reads in the words and the embeddings from the .txt file
