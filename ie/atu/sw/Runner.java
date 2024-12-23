@@ -3,7 +3,7 @@ package ie.atu.sw;
 public class Runner {
 
     public static void main(String[] args) throws Exception {
-		//You should put the following code into a menu or Menu class
+        //You should put the following code into a menu or Menu class
         System.out.println(ConsoleColour.WHITE);
         System.out.println("************************************************************");
         System.out.println("*     ATU - Dept. of Computer Science & Applied Physics    *");
