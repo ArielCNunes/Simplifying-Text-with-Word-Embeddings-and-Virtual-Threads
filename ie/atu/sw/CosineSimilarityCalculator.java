@@ -1,5 +1,8 @@
 package ie.atu.sw;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class CosineSimilarityCalculator {
     /**
      * This method returns the cosine similarity between the vectors which represent the words.
@@ -31,5 +34,33 @@ public class CosineSimilarityCalculator {
 
         // Return the dot product divided by the product of magnitudes
         return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+    }
+
+    /**
+     * This method finds the closest match for the target vector from the Google-1000 words.
+     *
+     * @param targetVector The vector of the word being simplified.
+     * @param googleEmbeddings Map containing Google-1000 words and their vectors.
+     * @return The closest word from the Google-1000 list.
+     */
+    public String closestWord(double[] targetVector, ConcurrentHashMap<String, double[]> googleEmbeddings) {
+        String closestWord = null;
+        double mostSimilar = -1.0; // lowest possible similarity
+
+        // Loop through each entry in the Google-1000 map
+        for (Map.Entry<String, double[]> entry : googleEmbeddings.entrySet()) {
+            // Retrieve the vector for the current word
+            double[] vector = entry.getValue();
+
+            // Calculate cosine similarity between target and current word
+            double similarity = getCosineSimilarity(targetVector, vector);
+
+            // Compare similarities and store closest one
+            if (similarity > mostSimilar) {
+                mostSimilar = similarity;
+                closestWord = entry.getKey();
+            }
+        }
+        return closestWord;
     }
 }
