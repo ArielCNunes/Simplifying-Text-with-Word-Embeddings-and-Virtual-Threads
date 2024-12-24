@@ -7,18 +7,18 @@ public class TextProcessor {
     // References to our maps and to the distance calculator class
     ConcurrentHashMap<String, double[]> wordEmbeddings;
     ConcurrentHashMap<String, double[]> googleWords;
-    CosineSimilarityCalculator similarityCalculator;
+    EuclideanDistanceCalculator similarityCalculator;
 
     // Constructor
     public TextProcessor(ConcurrentHashMap<String, double[]> wordEmbeddings, ConcurrentHashMap<String, double[]> googleWords) {
         this.wordEmbeddings = wordEmbeddings;
         this.googleWords = googleWords;
-        this.similarityCalculator = new CosineSimilarityCalculator();
+        this.similarityCalculator = new EuclideanDistanceCalculator();
     }
 
     /**
      * This method simplifies the input text by replacing each word with its most similar match
-     * from the Google-1000 words list based on cosine similarity.
+     * from the Google-1000 words list based on Euclidean distance.
      *
      * @param inputFile  Path to the input text file containing sentences to simplify.
      * @param outputFile Path to the output text file where the simplified text will be saved to.
@@ -36,6 +36,7 @@ public class TextProcessor {
 
                 // Access each word
                 for (String word : words) {
+                    word = word.trim().toLowerCase(); // for consistency's sake
                     if (wordEmbeddings.containsKey(word)) {
                         // For each word -> get embeddings, send them over to be compared, and get a word in return
                         double[] vector = wordEmbeddings.get(word);
