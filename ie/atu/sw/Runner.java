@@ -2,6 +2,7 @@ package ie.atu.sw;
 
 import java.io.IOException;
 import java.util.Scanner;
+import java.util.concurrent.Executors;
 
 public class Runner {
 
@@ -109,16 +110,23 @@ public class Runner {
      * @throws Exception If an error occurs during processing.
      */
     private void simplifyWords(String embeddingsFile, String google1000File, String inputFile, String outputFile) throws IOException {
-        // Load embeddings and google-1000 words (using data loading manager class)
-        DataLoadingManager dataManager = new DataLoadingManager();
-        dataManager.loadWordEmbeddings(embeddingsFile);
-        dataManager.loadGoogle1000Words(google1000File);
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            executor.execute(() -> {
+                try {
+                    // Load embeddings and google-1000 words (using data loading manager class)
+                    DataLoadingManager dataManager = new DataLoadingManager();
+                    dataManager.loadWordEmbeddings(embeddingsFile);
+                    dataManager.loadGoogle1000Words(google1000File);
 
-        // Process comparison and save output
-        TextProcessor processor = new TextProcessor(dataManager.wordEmbeddings, dataManager.googleWords);
-        processor.simplifyText(inputFile, outputFile);
+                    // Process comparison and save output
+                    TextProcessor processor = new TextProcessor(dataManager.wordEmbeddings, dataManager.googleWords);
+                    processor.simplifyText(inputFile, outputFile);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        }
     }
-
 
     /*
      *  Terminal Progress Meter

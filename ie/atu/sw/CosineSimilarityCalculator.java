@@ -39,7 +39,7 @@ public class CosineSimilarityCalculator {
     /**
      * This method finds the closest match for the target vector from the Google-1000 words.
      *
-     * @param targetVector The vector of the word being simplified.
+     * @param targetVector     The vector of the word being simplified.
      * @param googleEmbeddings Map containing Google-1000 words and their vectors.
      * @return The closest word from the Google-1000 list.
      */
