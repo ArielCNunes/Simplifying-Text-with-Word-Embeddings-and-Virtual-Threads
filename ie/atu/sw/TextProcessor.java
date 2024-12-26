@@ -2,6 +2,7 @@ package ie.atu.sw;
 
 import java.io.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
 
 public class TextProcessor {
     // References to our maps and to the distance calculator class
@@ -34,20 +35,32 @@ public class TextProcessor {
                 String[] words = line.split(" ");
                 StringBuilder newLine = new StringBuilder();
 
-                // Access each word
-                for (String word : words) {
-                    word = word.trim().toLowerCase(); // for consistency's sake
-                    if (wordEmbeddings.containsKey(word)) {
-                        // For each word -> get embeddings, send them over to be compared, and get a word in return
-                        double[] vector = wordEmbeddings.get(word);
-                        String newWord = similarityCalculator.closestWord(vector, googleWords);
-                        newLine.append(newWord).append(" ");
-                    } else {
-                        // Word is unchanged
-                        newLine.append(word).append(" ");
-                    }
-                }
+                // Process each word concurrently
+                var executor = Executors.newVirtualThreadPerTaskExecutor();
+                executor.submit(() -> {
+                    for (String word : words) {
+                        String newWord;
 
+                        // Replace word if embeddings exist
+                        if (wordEmbeddings.containsKey(word)) {
+                            double[] vector = wordEmbeddings.get(word);
+                            newWord = similarityCalculator.closestWord(vector, googleWords);
+                        } else {
+                            newWord = word; // Keep original
+                        }
+
+                        // Thread-safe append
+                        synchronized (newLine) {
+                            newLine.append(newWord).append(" ");
+                        }
+                    }
+                });
+
+                // Shutdown and await termination
+                executor.shutdown();
+                executor.awaitTermination(1, java.util.concurrent.TimeUnit.MINUTES);
+
+                // Print result to file
                 writer.write(newLine.toString().trim());
                 writer.newLine();
             }
@@ -55,6 +68,8 @@ public class TextProcessor {
             System.out.println("File not found");
         } catch (IOException e) {
             System.out.println("I/O exception");
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 }
