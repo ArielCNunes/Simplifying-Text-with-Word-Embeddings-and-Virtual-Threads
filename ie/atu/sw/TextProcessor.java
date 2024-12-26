@@ -8,13 +8,13 @@ public class TextProcessor {
     // References to our maps and to the distance calculator class
     ConcurrentHashMap<String, double[]> wordEmbeddings;
     ConcurrentHashMap<String, double[]> googleWords;
-    EuclideanDistanceCalculator similarityCalculator;
+    CosineSimilarityCalculator similarityCalculator;
 
     // Constructor
     public TextProcessor(ConcurrentHashMap<String, double[]> wordEmbeddings, ConcurrentHashMap<String, double[]> googleWords) {
         this.wordEmbeddings = wordEmbeddings;
         this.googleWords = googleWords;
-        this.similarityCalculator = new EuclideanDistanceCalculator();
+        this.similarityCalculator = new CosineSimilarityCalculator();
     }
 
     /**

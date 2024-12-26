@@ -3,28 +3,31 @@ package ie.atu.sw;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class EuclideanDistanceCalculator {
+public class CosineSimilarityCalculator {
     /**
-     * This method returns the cosine similarity between the vectors which represent the words.
+     * This method calculates cosine similarity between two vectors.
      *
      * @param vector1 The first word vector.
      * @param vector2 The second word vector.
      * @return Cosine similarity score.
      * @throws IllegalArgumentException if vectors are of different lengths.
      */
-    private double getEuclideanDistance(double[] vector1, double[] vector2) {
-        // Make sure both words have the same amount of vectors
+    private double getCosineSimilarity(double[] vector1, double[] vector2) {
         if (vector1.length != vector2.length) {
-            throw new IllegalArgumentException("vectors must have the same length");
+            throw new IllegalArgumentException("Vectors must have the same length");
         }
 
-        // Get sum of squared differences
-        double sum = 0.0;
+        double dotProduct = 0.0;
+        double normA = 0.0;
+        double normB = 0.0;
+
         for (int i = 0; i < vector1.length; i++) {
-            sum += Math.pow(vector1[i] - vector2[i], 2);
+            dotProduct += vector1[i] * vector2[i];
+            normA += Math.pow(vector1[i], 2);
+            normB += Math.pow(vector2[i], 2);
         }
 
-        return Math.sqrt(sum);
+        return (dotProduct / (Math.sqrt(normA) * Math.sqrt(normB)));
     }
 
     /**
@@ -36,22 +39,21 @@ public class EuclideanDistanceCalculator {
      */
     public String closestWord(double[] originalWordVector, ConcurrentHashMap<String, double[]> googleEmbeddings) {
         String closestWord = null;
-        double smallestDistance = Double.MAX_VALUE;
+        double highestSimilarity = -1;
 
-        // Loop through each entry in the Google-1000 map
         for (Map.Entry<String, double[]> entry : googleEmbeddings.entrySet()) {
-            // Retrieve the vector for the current word
             double[] vector = entry.getValue();
 
-            // Calculate Euclidean distance between target and current word
-            double distance = getEuclideanDistance(originalWordVector, vector);
+            // Calculate cosine similarity
+            double similarity = getCosineSimilarity(originalWordVector, vector);
 
-            // Compare similarities and store closest one
-            if (distance < smallestDistance) {
-                smallestDistance = distance;
+            // Update if this word is a better match
+            if (similarity > highestSimilarity) {
+                highestSimilarity = similarity;
                 closestWord = entry.getKey();
             }
         }
+
         return closestWord;
     }
 }
