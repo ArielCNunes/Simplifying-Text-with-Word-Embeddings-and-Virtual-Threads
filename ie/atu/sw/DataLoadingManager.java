@@ -15,7 +15,10 @@ public class DataLoadingManager {
     final ConcurrentHashMap<String, double[]> googleWords = new ConcurrentHashMap<>();
 
     /**
-     * This method reads in the words and the embeddings from the .txt file
+     * This method reads in the words and vectors from the embeddings.txt file
+     *
+     * @param fileName The path to the text file containing word embeddings.
+     * @throws IOException If there is an error reading the file.
      */
     public void loadWordEmbeddings(String fileName) throws IOException {
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName));
@@ -47,7 +50,10 @@ public class DataLoadingManager {
     }
 
     /**
-     * This method reads in the Google-1000 words
+     * This method reads in the words from the google-1000.txt file
+     *
+     * @param fileName The path to the file containing the Google-1000 word list.
+     * @throws IOException If there is an error reading the file.
      */
     public void loadGoogle1000Words(String fileName) throws IOException {
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName));

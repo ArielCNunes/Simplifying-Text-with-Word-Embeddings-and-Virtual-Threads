@@ -119,7 +119,7 @@ public class Runner {
                     dataManager.loadGoogle1000Words(google1000File);
 
                     // Process comparison and save output
-                    TextProcessor processor = new TextProcessor(dataManager.wordEmbeddings, dataManager.googleWords);
+                    TextSimplifier processor = new TextSimplifier(dataManager.wordEmbeddings, dataManager.googleWords);
                     processor.simplifyText(inputFile, outputFile);
                 } catch (Exception e) {
                     e.printStackTrace();

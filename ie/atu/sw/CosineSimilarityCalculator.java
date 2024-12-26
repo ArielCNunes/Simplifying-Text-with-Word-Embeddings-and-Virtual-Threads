@@ -3,6 +3,9 @@ package ie.atu.sw;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * This class does the cosine similarity calculation
+ */
 public class CosineSimilarityCalculator {
     /**
      * This method calculates cosine similarity between two vectors.
@@ -10,6 +13,7 @@ public class CosineSimilarityCalculator {
      * @param vector1 The first word vector.
      * @param vector2 The second word vector.
      * @return Cosine similarity score.
+     *
      * @throws IllegalArgumentException if vectors are of different lengths.
      */
     private double getCosineSimilarity(double[] vector1, double[] vector2) {
@@ -35,6 +39,7 @@ public class CosineSimilarityCalculator {
      *
      * @param originalWordVector The vector of the word being simplified.
      * @param googleEmbeddings   Map containing Google-1000 words and their vectors.
+     *
      * @return The closest word from the Google-1000 list.
      */
     public String closestWord(double[] originalWordVector, ConcurrentHashMap<String, double[]> googleEmbeddings) {

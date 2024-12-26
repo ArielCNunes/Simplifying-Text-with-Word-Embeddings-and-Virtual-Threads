@@ -4,14 +4,14 @@ import java.io.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 
-public class TextProcessor {
-    // References to our maps and to the distance calculator class
+public class TextSimplifier {
+    // References to our maps and to the cosine similarity class
     ConcurrentHashMap<String, double[]> wordEmbeddings;
     ConcurrentHashMap<String, double[]> googleWords;
     CosineSimilarityCalculator similarityCalculator;
 
     // Constructor
-    public TextProcessor(ConcurrentHashMap<String, double[]> wordEmbeddings, ConcurrentHashMap<String, double[]> googleWords) {
+    public TextSimplifier(ConcurrentHashMap<String, double[]> wordEmbeddings, ConcurrentHashMap<String, double[]> googleWords) {
         this.wordEmbeddings = wordEmbeddings;
         this.googleWords = googleWords;
         this.similarityCalculator = new CosineSimilarityCalculator();
