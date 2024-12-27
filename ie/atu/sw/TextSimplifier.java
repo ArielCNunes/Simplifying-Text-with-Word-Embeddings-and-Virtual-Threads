@@ -4,11 +4,14 @@ import java.io.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 
+/**
+ * This class is responsible for the actual text simplification
+ */
 public class TextSimplifier {
     // References to our maps and to the cosine similarity class
-    ConcurrentHashMap<String, double[]> wordEmbeddings;
-    ConcurrentHashMap<String, double[]> googleWords;
-    CosineSimilarityCalculator cosineSimilarityCalculator;
+    private final ConcurrentHashMap<String, double[]> wordEmbeddings;
+    private final ConcurrentHashMap<String, double[]> googleWords;
+    private final CosineSimilarityCalculator cosineSimilarityCalculator;
 
     // Constructor
     public TextSimplifier(ConcurrentHashMap<String, double[]> wordEmbeddings, ConcurrentHashMap<String, double[]> googleWords) {
@@ -18,8 +21,16 @@ public class TextSimplifier {
     }
 
     /**
-     * This method simplifies the input text by replacing each word with its most similar match
-     * from the Google-1000 words list based on Euclidean distance.
+     * This method simplifies the input text by replacing each word with its most similar match the Google-1000 words
+     * list based on Cosine Similarity.
+     *
+     * <p>It reads in the line of text and splits it by " ". Each word is saved in an array 'words'. Then we loop
+     * through all the words in the array, check to see if they have embeddings and if so, then calculate similarity
+     * and swap (or don't).</p>
+     *
+     * <p><b>Big-O Notation is O(n * m)</b></p> -> where n = Number of lines in the input file and m = Number of words
+     * per line. We loop through each line (array with words) and for each word we search the map (O(1)) and do
+     * the swapping.
      *
      * @param inputFile  Path to the input text file containing sentences to simplify.
      * @param outputFile Path to the output text file where the simplified text will be saved to.
@@ -38,15 +49,18 @@ public class TextSimplifier {
                 // Process each word concurrently
                 var executor = Executors.newVirtualThreadPerTaskExecutor();
                 executor.submit(() -> {
-                    for (String word : words) {
+                    for (String currentWord : words) {
+                        // Get word embeddings is they exist
                         String newWord;
+                        if (wordEmbeddings.containsKey(currentWord)) {
+                            // Store embeddings for current word
+                            double[] embeddings = wordEmbeddings.get(currentWord);
 
-                        // Replace word if embeddings exist
-                        if (wordEmbeddings.containsKey(word)) {
-                            double[] embeddings = wordEmbeddings.get(word);
+                            // Get the closest word
                             newWord = cosineSimilarityCalculator.closestWord(embeddings, googleWords);
                         } else {
-                            newWord = word; // Keep original
+                            // Keep original
+                            newWord = currentWord;
                         }
 
                         // Thread-safe append

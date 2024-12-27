@@ -5,22 +5,28 @@ import java.util.Scanner;
 import java.util.concurrent.Executors;
 
 public class Runner {
-
+    /**
+     * Entry point of the application. This method initializes an instance of the Runner class and calls the menu()
+     * method to give the user options. The application uses virtual thread for processing tasks concurrently.
+     *
+     * @param args Command line arguments
+     * @throws Exception if any errors occur during execution
+     */
     public static void main(String[] args) throws Exception {
         Runner runner = new Runner();
         runner.menu();
     }
 
     /**
-     * Displays the main menu and processes user input.
-     * Allows the user to specify file paths and execute text simplification.
+     * This method displays the main menu and processes user input. It allows the user to specify file paths
+     * and execute text simplification.
      *
-     * @throws Exception If an error occurs during processing.
+     * @throws Exception if any errors occur during execution
      */
-    public void menu() throws Exception {
+    private void menu() throws Exception {
         Scanner scanner = new Scanner(System.in);
 
-        // Variables for file paths
+        // File paths variables
         String embeddingsFile = null;
         String google1000File = null;
         String inputFile = null;
@@ -50,6 +56,7 @@ public class Runner {
             // Get rid of leftover line
             scanner.nextLine();
 
+            // Options
             switch (choice) {
                 case 1:
                     System.out.println("Enter Path For Embeddings File: ");
@@ -68,14 +75,17 @@ public class Runner {
                     outputFile = scanner.nextLine();
                     break;
                 case 5:
+                    // Check if all paths have been entered
                     if (embeddingsFile == null || google1000File == null || inputFile == null) {
                         System.out.println(ConsoleColour.RED + "Please specify all required file paths first.");
                         continue;
                     }
 
+                    // Load data and process input
                     try {
-                        // Load data and process input
                         simplifyWords(embeddingsFile, google1000File, inputFile, outputFile);
+
+                        // After text simplification is complete
                         System.out.println(ConsoleColour.GREEN + "Text simplification complete!");
                         System.out.println(ConsoleColour.CYAN + "Output saved to: " + outputFile);
                     } catch (Exception e) {
@@ -101,11 +111,13 @@ public class Runner {
     }
 
     /**
-     * Simplifies the text using specified file paths.
+     * This method loads the word embeddings and the Google-1000 word list into memory (concurrently) and processes the
+     * input text file, replacing words with their closest matches from the Google-1000 list and saves them to the specified
+     * output file.
      *
-     * @param embeddingsFile Path to embeddings file.
-     * @param google1000File Path to Google-1000 file.
-     * @param inputFile      Path to input file.
+     * @param embeddingsFile Path to the embeddings file.
+     * @param google1000File Path to the Google-1000 file.
+     * @param inputFile      Path to the input file.
      * @param outputFile     Path for the output file.
      * @throws Exception If an error occurs during processing.
      */
@@ -123,6 +135,8 @@ public class Runner {
                     processor.simplifyText(inputFile, outputFile);
                 } catch (Exception e) {
                     e.printStackTrace();
+                } finally {
+                    executor.shutdown();
                 }
             });
         }
