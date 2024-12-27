@@ -8,13 +8,13 @@ public class TextSimplifier {
     // References to our maps and to the cosine similarity class
     ConcurrentHashMap<String, double[]> wordEmbeddings;
     ConcurrentHashMap<String, double[]> googleWords;
-    CosineSimilarityCalculator similarityCalculator;
+    CosineSimilarityCalculator cosineSimilarityCalculator;
 
     // Constructor
     public TextSimplifier(ConcurrentHashMap<String, double[]> wordEmbeddings, ConcurrentHashMap<String, double[]> googleWords) {
         this.wordEmbeddings = wordEmbeddings;
         this.googleWords = googleWords;
-        this.similarityCalculator = new CosineSimilarityCalculator();
+        this.cosineSimilarityCalculator = new CosineSimilarityCalculator();
     }
 
     /**
@@ -43,8 +43,8 @@ public class TextSimplifier {
 
                         // Replace word if embeddings exist
                         if (wordEmbeddings.containsKey(word)) {
-                            double[] vector = wordEmbeddings.get(word);
-                            newWord = similarityCalculator.closestWord(vector, googleWords);
+                            double[] embeddings = wordEmbeddings.get(word);
+                            newWord = cosineSimilarityCalculator.closestWord(embeddings, googleWords);
                         } else {
                             newWord = word; // Keep original
                         }

@@ -13,7 +13,6 @@ public class CosineSimilarityCalculator {
      * @param vector1 The first word vector.
      * @param vector2 The second word vector.
      * @return Cosine similarity score.
-     *
      * @throws IllegalArgumentException if vectors are of different lengths.
      */
     private double getCosineSimilarity(double[] vector1, double[] vector2) {
@@ -37,20 +36,19 @@ public class CosineSimilarityCalculator {
     /**
      * This method finds the closest match for the target vector from the Google-1000 words.
      *
-     * @param originalWordVector The vector of the word being simplified.
-     * @param googleEmbeddings   Map containing Google-1000 words and their vectors.
-     *
+     * @param inputWordEmbeddings The vector of the word being simplified.
+     * @param googleEmbeddings    Map containing Google-1000 words and their vectors.
      * @return The closest word from the Google-1000 list.
      */
-    public String closestWord(double[] originalWordVector, ConcurrentHashMap<String, double[]> googleEmbeddings) {
+    public String closestWord(double[] inputWordEmbeddings, ConcurrentHashMap<String, double[]> googleEmbeddings) {
         String closestWord = null;
         double highestSimilarity = -1;
 
         for (Map.Entry<String, double[]> entry : googleEmbeddings.entrySet()) {
-            double[] vector = entry.getValue();
+            double[] google100Embeddings = entry.getValue();
 
             // Calculate cosine similarity
-            double similarity = getCosineSimilarity(originalWordVector, vector);
+            double similarity = getCosineSimilarity(inputWordEmbeddings, google100Embeddings);
 
             // Update if this word is a better match
             if (similarity > highestSimilarity) {
@@ -58,7 +56,6 @@ public class CosineSimilarityCalculator {
                 closestWord = entry.getKey();
             }
         }
-
         return closestWord;
     }
 }
